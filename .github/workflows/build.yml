@@ -34,26 +34,51 @@ jobs:
           rm -rf android
           flutter create --platforms=android --org com.ramel --project-name hrms_mobile .
           python3 -c "
+          import os
+
+          # 1. Ensure permissions in AndroidManifest.xml
           path = 'android/app/src/main/AndroidManifest.xml'
-          with open(path, 'r') as f:
-              data = f.read()
-          perms = '''
-              <uses-permission android:name=\"android.permission.INTERNET\"/>
-              <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>
-              <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>
-              <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>
-          '''
-          if '<application' in data and 'android.permission.INTERNET' not in data:
-              data = data.replace('<application', perms + '    <application', 1)
-              with open(path, 'w') as f:
-                  f.write(data)
+          if os.path.exists(path):
+              with open(path, 'r') as f:
+                  data = f.read()
+              perms = '''
+                  <uses-permission android:name=\"android.permission.INTERNET\"/>
+                  <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>
+                  <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>
+                  <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>
+              '''
+              if '<application' in data and 'android.permission.INTERNET' not in data:
+                  data = data.replace('<application', perms + '    <application', 1)
+                  with open(path, 'w') as f:
+                      f.write(data)
+
+          # 2. Fix compileSdkVersion for geolocator_android in build.gradle & build.gradle.kts
+          for fpath in ['android/app/build.gradle', 'android/app/build.gradle.kts']:
+              if os.path.exists(fpath):
+                  with open(fpath, 'r') as f:
+                      txt = f.read()
+                  txt = txt.replace('flutter.compileSdkVersion', '34')
+                  txt = txt.replace('flutter.minSdkVersion', '21')
+                  txt = txt.replace('flutter.targetSdkVersion', '34')
+                  with open(fpath, 'w') as f:
+                      f.write(txt)
+
+          # 3. Add rootProject ext versions for plugin listeners
+          for rpath in ['android/build.gradle', 'android/build.gradle.kts']:
+              if os.path.exists(rpath):
+                  with open(rpath, 'r') as f:
+                      rtxt = f.read()
+                  if 'ext.compileSdkVersion' not in rtxt:
+                      rtxt = 'allprojects {\n    ext.compileSdkVersion = 34\n    ext.minSdkVersion = 21\n    ext.targetSdkVersion = 34\n}\n' + rtxt
+                      with open(rpath, 'w') as f:
+                          f.write(rtxt)
           "
 
       - name: Get Dependencies
         run: flutter pub get
 
       - name: Build Release APK
-        run: flutter build apk --release
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
