@@ -28,6 +28,9 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Generate Native Android Files
+        run: flutter create --platforms=android --org com.ramel .
+
       - name: Get Dependencies
         run: flutter pub get
 
@@ -41,7 +44,7 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
 
   # ==========================================
-  # 2. BUILD IOS (NO-CODESIGN FOR TESTING)
+  # 2. BUILD IOS (PAYLOAD PACKAGE)
   # ==========================================
   build-ios:
     runs-on: macos-latest
@@ -56,10 +59,13 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Generate Native iOS Files
+        run: flutter create --platforms=ios --org com.ramel .
+
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build iOS App Bundle (Unsigned / Simulator / Ad-Hoc)
+      - name: Build iOS App Bundle (No-CodeSign)
         run: flutter build ios --release --no-codesign
 
       - name: Package iOS Payload (IPA)
