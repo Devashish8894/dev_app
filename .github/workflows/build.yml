@@ -33,11 +33,21 @@ jobs:
         run: |
           rm -rf android
           flutter create --platforms=android --org com.ramel --project-name hrms_mobile .
-          # Ensure minSdk is 21 for geolocator
-          sed -i 's/minSdkVersion = flutter.minSdkVersion/minSdkVersion = 21/g' android/app/build.gradle || true
-          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle || true
-          # Add location and network permissions
-          sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET"/>\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>' android/app/src/main/AndroidManifest.xml
+          python3 -c "
+          path = 'android/app/src/main/AndroidManifest.xml'
+          with open(path, 'r') as f:
+              data = f.read()
+          perms = '''
+              <uses-permission android:name=\"android.permission.INTERNET\"/>
+              <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>
+              <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>
+              <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>
+          '''
+          if '<application' in data and 'android.permission.INTERNET' not in data:
+              data = data.replace('<application', perms + '    <application', 1)
+              with open(path, 'w') as f:
+                  f.write(data)
+          "
 
       - name: Get Dependencies
         run: flutter pub get
