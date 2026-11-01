@@ -11,13 +11,13 @@ git remote add origin https://github.com/Devashish8894/dev_app.git
 git branch -M main
 
 git add .
-git commit -m "Build mobile app"
+git commit -m "Update clean build workflow for APK and iOS"
 git push -u origin main --force
 
 echo =======================================================
 echo PUSH COMPLETE!
 echo.
-echo Now open this link in your browser to get your APK and iOS package:
+echo Now open this link in your browser:
 echo https://github.com/Devashish8894/dev_app/actions
 echo =======================================================
 pause

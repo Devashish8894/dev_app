@@ -10,6 +10,7 @@ jobs:
   # 1. BUILD ANDROID APK
   # ==========================================
   build-android:
+    name: Build Android APK
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -24,12 +25,19 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.x'
+          flutter-version: '3.24.5'
           channel: 'stable'
           cache: true
 
-      - name: Generate Native Android Files
-        run: flutter create --platforms=android --org com.ramel .
+      - name: Recreate Clean Native Android Shell
+        run: |
+          rm -rf android
+          flutter create --platforms=android --org com.ramel --project-name hrms_mobile .
+          # Ensure minSdk is 21 for geolocator
+          sed -i 's/minSdkVersion = flutter.minSdkVersion/minSdkVersion = 21/g' android/app/build.gradle || true
+          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle || true
+          # Add location and network permissions
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET"/>\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>' android/app/src/main/AndroidManifest.xml
 
       - name: Get Dependencies
         run: flutter pub get
@@ -47,6 +55,7 @@ jobs:
   # 2. BUILD IOS (PAYLOAD PACKAGE)
   # ==========================================
   build-ios:
+    name: Build iOS Package
     runs-on: macos-latest
     steps:
       - name: Checkout Code
@@ -55,20 +64,22 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.x'
+          flutter-version: '3.24.5'
           channel: 'stable'
           cache: true
 
-      - name: Generate Native iOS Files
-        run: flutter create --platforms=ios --org com.ramel .
+      - name: Recreate Clean Native iOS Shell
+        run: |
+          rm -rf ios
+          flutter create --platforms=ios --org com.ramel --project-name hrms_mobile .
 
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build iOS App Bundle (No-CodeSign)
+      - name: Build iOS App (No-CodeSign)
         run: flutter build ios --release --no-codesign
 
-      - name: Package iOS Payload (IPA)
+      - name: Create iOS Payload IPA
         run: |
           mkdir -p Payload
           cp -r build/ios/iphoneos/Runner.app Payload/
