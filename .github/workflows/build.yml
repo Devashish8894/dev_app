@@ -29,18 +29,8 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Recreate Clean Native Android Shell
-        run: |
-          rm -rf android
-          flutter create --platforms=android --org com.ramel --project-name hrms_mobile .
-          chmod +x android/gradlew
-          python3 -c "
-          p = 'android/app/src/main/AndroidManifest.xml'
-          with open(p, 'r') as f: c = f.read()
-          perms = '''    <uses-permission android:name=\"android.permission.INTERNET\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>\n'''
-          c = c.replace('<application', perms + '    <application android:usesCleartextTraffic=\"true\"')
-          with open(p, 'w') as f: f.write(c)
-          "
+      - name: Make Gradlew Executable
+        run: chmod +x android/gradlew
 
       - name: Get Dependencies
         run: flutter pub get
