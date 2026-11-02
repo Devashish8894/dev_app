@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ramel.hrms_mobile">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Permissions for HRMS backend network access & attendance location -->
     <uses-permission android:name="android.permission.INTERNET"/>
