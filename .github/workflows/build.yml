@@ -36,7 +36,13 @@ jobs:
         run: chmod +x android/gradlew
 
       - name: Build Release APK
-        run: flutter build apk --release --no-tree-shake-icons
+        run: |
+          flutter build apk --release --no-tree-shake-icons || {
+            echo "Flutter build failed. Showing Gradle stacktrace:"
+            cd android
+            ./gradlew assembleRelease --stacktrace
+            exit 1
+          }
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
