@@ -1,21 +1,21 @@
 plugins {
     id "com.android.application"
-    id "org.jetbrains.kotlin.android"
+    id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
 android {
-    namespace "com.ramel.hrms_mobile"
-    compileSdk 35
-    ndkVersion flutter.ndkVersion
+    namespace = "com.ramel.hrms_mobile"
+    compileSdk = 34
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
 
     sourceSets {
@@ -23,23 +23,20 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.ramel.hrms_mobile"
-        minSdk 21
-        targetSdk 35
-        versionCode flutter.versionCode
-        versionName flutter.versionName
+        applicationId = "com.ramel.hrms_mobile"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
     }
 
     buildTypes {
         release {
-            // Use debug signing for unsigned release builds (no keystore needed on CI)
-            signingConfig signingConfigs.debug
-            minifyEnabled false
-            shrinkResources false
+            signingConfig = signingConfigs.debug
         }
     }
 }
 
 flutter {
-    source "../.."
+    source = "../.."
 }
