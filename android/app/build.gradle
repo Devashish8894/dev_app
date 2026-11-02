@@ -6,14 +6,13 @@ plugins {
 }
 
 android {
-    namespace "com.ramel.hrms_mobile"
-    compileSdkVersion 34
-    compileSdk 34
-    ndkVersion flutter.ndkVersion
+    namespace = "com.ramel.hrms_mobile"
+    compileSdk = 34
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
@@ -21,22 +20,20 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.ramel.hrms_mobile"
-        minSdkVersion 21
-        minSdk 21
-        targetSdkVersion 34
-        targetSdk 34
-        versionCode flutter.versionCode
-        versionName flutter.versionName
+        applicationId = "com.ramel.hrms_mobile"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig = signingConfigs.debug
         }
     }
 }
 
 flutter {
-    source "../.."
+    source = "../.."
 }
