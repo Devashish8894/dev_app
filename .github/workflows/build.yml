@@ -29,20 +29,24 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Recreate Clean Native Android Shell
+        run: |
+          rm -rf android
+          flutter create --platforms=android --org com.ramel --project-name hrms_mobile .
+          chmod +x android/gradlew
+          python3 -c "
+          p = 'android/app/src/main/AndroidManifest.xml'
+          with open(p, 'r') as f: c = f.read()
+          perms = '''    <uses-permission android:name=\"android.permission.INTERNET\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>\n    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>\n'''
+          c = c.replace('<application', perms + '    <application android:usesCleartextTraffic=\"true\"')
+          with open(p, 'w') as f: f.write(c)
+          "
+
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Make Gradlew Executable
-        run: chmod +x android/gradlew
-
       - name: Build Release APK
-        run: |
-          flutter build apk --release --no-tree-shake-icons || {
-            echo "Flutter build failed. Showing Gradle stacktrace:"
-            cd android
-            ./gradlew assembleRelease --stacktrace
-            exit 1
-          }
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
